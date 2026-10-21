@@ -1,0 +1,21 @@
+# Keeps the SHA-pinned actions current (docs/project_plan.md section 8). Pull requests target
+# develop, like every other change. npm and Docker updates are left out on purpose: dependencies
+# are pinned exactly and bumped with `make install PKG=...`, and the Playwright image tag must move
+# together with @playwright/test and the VRT baselines (src/conventions.test.ts).
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directories:
+      - /
+      - /.github/actions/setup
+    target-branch: develop
+    schedule:
+      interval: weekly
+    # Lets a compromised release be noticed and pulled before it is proposed.
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: ci
+    groups:
+      github-actions:
+        patterns: ['*']

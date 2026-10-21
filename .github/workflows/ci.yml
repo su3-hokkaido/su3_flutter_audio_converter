@@ -1,0 +1,42 @@
+# The checks of `make ci` (docs/project_plan.md section 8): manifest, format check, lint, typecheck,
+# tests with coverage (the browser tests need Chromium), the package build and checks, and every
+# product's Storybook build.
+#
+# Triggers: pull requests, and workflow_call from deploy_dev.yml and deploy_prod.yml. Those call it
+# as their `checks` job, so a push to develop or main runs CI exactly once and a failing CI blocks
+# the deploy. There is deliberately no `push` trigger here.
+name: CI
+
+on:
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ci:
+    name: Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      # Vitest Browser Mode runs the component tests in real Chromium. (`make ci` has the browser in
+      # the dev image; the runner installs it, with the system libraries it needs.)
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      # The same script as `make ci`, run on the runner instead of in the dev image.
+      - name: Run the CI checks
+        run: pnpm run ci

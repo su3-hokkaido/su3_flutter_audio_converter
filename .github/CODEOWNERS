@@ -1,0 +1,5 @@
+# If you want to change CODEOWNERS file, please ask this organization admin users such as follows.
+.github/CODEOWNERS @su3-hokkaido
+
+# Mandatory code reviewers for main and test branches
+* @su3-hokkaido

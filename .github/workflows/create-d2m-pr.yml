@@ -1,0 +1,40 @@
+# develop -> main release pull request (docs/project_plan.md section 8). On every push to develop,
+# git-pr-release opens or updates the pull request and lists the merged pull requests in its body
+# (.git-pr-release, .github/git-pr-release.erb). Pull requests opened with GITHUB_TOKEN do not
+# trigger CI, so the optional RELEASE_TOKEN secret is used when it is set, as in release.yml.
+name: Create d2m PR
+
+on:
+  push:
+    branches: [develop]
+
+permissions:
+  contents: read
+
+jobs:
+  d2m-pr:
+    name: Open or update the release pull request
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    permissions:
+      contents: read
+      pull-requests: write # the release pull request
+      issues: write # the label from .git-pr-release is set through the issues API
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # git-pr-release compares origin/main and origin/develop.
+          fetch-depth: 0
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@824c0e29fdfc7d689c191c27acc969d2d04b7dd8 # v1.331.0
+        with:
+          ruby-version: 3.3.1
+
+      - name: Run git-pr-release (develop -> main)
+        env:
+          GIT_PR_RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          gem install git-pr-release -v 2.6.0
+          git-pr-release || echo "Done."

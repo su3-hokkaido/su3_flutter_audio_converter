@@ -1,0 +1,30 @@
+name: Bug report
+description: Something renders or behaves incorrectly.
+labels: [bug]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: The component, story or clean URL, and the steps.
+      placeholder: |
+        1. Open /sample/c/buttons/toggle
+        2. ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package version or commit
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, OS, and for package consumers the framework and bundler setup (for example Vite, React 19, Vue or plain HTML).
