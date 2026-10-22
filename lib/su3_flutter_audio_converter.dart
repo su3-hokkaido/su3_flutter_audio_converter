@@ -5,6 +5,8 @@ import 'dart:isolate';
 
 import 'su3_flutter_audio_converter_bindings_generated.dart';
 
+export 'src/audio_format.dart';
+
 /// A very short-lived native function.
 ///
 /// For very short-lived functions, it is fine to call them on the main isolate.
