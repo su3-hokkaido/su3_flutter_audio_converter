@@ -49,6 +49,34 @@ Known template leftovers to replace as the wrapper is written:
 4. M3 Dart API slice: `AudioFormat`, `ConvertOptions`, `AudioConverter.convert` for this one path,
    `NativeCallable.listener` for progress; example app on macOS.
 
+## Build results (M1, macOS)
+
+`build/ffmpeg/build_macos.sh` with FFmpeg 8.1.3 and LAME 3.100 produced five universal
+(arm64 + x86_64) dylibs in `build/work/out/macos/lib`, 4.3 MB in total:
+
+| Library | Size |
+|---|---|
+| libavcodec | 1.29 MB |
+| libavformat | 1.31 MB |
+| libavutil | 1.05 MB |
+| libmp3lame | 0.70 MB |
+| libswresample | 0.19 MB |
+
+Checks done: both architectures present in every file; install names and inter-library references
+are `@rpath/...`; the only other dependencies are `libSystem` and the CoreFoundation, CoreVideo
+and CoreMedia frameworks; the binaries report "LGPL version 2.1 or later"; the recorded configure
+line matches the flags file (no GPL/nonfree). Minimum macOS is 10.15 for x86_64 and 11.0 for arm64.
+
+Findings to act on:
+
+- CoreVideo and CoreMedia are linked although no video is used (libavutil's Darwin hardware-context
+  code). Harmless, but it is more than "libSystem only"; revisit with `--disable-videotoolbox` and
+  similar if the final configure shows it can be dropped without losing anything required.
+- The five dylibs still need to become dynamic frameworks (iOS requires them; macOS uses the same
+  layout for consistency) and be wired into the podspec via `vendored_frameworks`. This also needs
+  `tool/fetch_prebuilt.sh`. Doing it as the first step of M2 keeps the wrapper buildable.
+- The x86_64 slice needs Rosetta on Apple-silicon build machines (LAME runs its configure tests).
+
 ## Open questions
 
 None blocking. The final native library name is decided at M2 (see above).
