@@ -1,0 +1,28 @@
+PODS:
+  - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
+  - su3_flutter_audio_converter (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - su3_flutter_audio_converter (from `.symlinks/plugins/su3_flutter_audio_converter/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  su3_flutter_audio_converter:
+    :path: ".symlinks/plugins/su3_flutter_audio_converter/ios"
+
+SPEC CHECKSUMS:
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  su3_flutter_audio_converter: 67cc30b324c727c65c792243e81fe08b718040a4
+
+PODFILE CHECKSUM: 4791f67ad6748bfc36314e6f7279d3f782d74a5b
+
+COCOAPODS: 1.17.0

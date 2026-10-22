@@ -1,7 +1,7 @@
 // Conversion matrix and edge cases against the real native library. Runs inside the macOS example
 // app: cd example && flutter test integration_test -d macos
 //
-// The inputs are the self-made fixtures of test/fixtures/ (see its README.md), bundled as assets.
+// The inputs are the self-made fixtures of assets/fixtures/ (see its README.md), bundled as assets.
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -30,7 +30,7 @@ void main() {
     fixtureDir = Directory.systemTemp.createTempSync('su3_fixtures_');
     for (final AudioFormat format in AudioFormat.values) {
       final String name = 'tone.${format.fileExtension}';
-      final ByteData data = await rootBundle.load('../test/fixtures/$name');
+      final ByteData data = await rootBundle.load('assets/fixtures/$name');
       File('${fixtureDir.path}/$name').writeAsBytesSync(
         data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
       );
