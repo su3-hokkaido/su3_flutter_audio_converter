@@ -48,6 +48,8 @@ for arch in "${archs[@]}"; do
   [ "$arch" = "x86_64" ] && asm_args=(--disable-x86asm) # keeps nasm out of the build requirements
   (
     cd "$work/build-macos/$arch/ffmpeg"
+    # Decoders beyond the section 5.3 table: mp3float is the decoder FFmpeg actually uses for MP3
+    # (mp3 is the fixed-point variant); pcm_u8 reads 8-bit WAV input (within the pcm_* range).
     ./configure \
       --prefix="$prefix" \
       --enable-cross-compile --target-os=darwin --arch="$arch" \

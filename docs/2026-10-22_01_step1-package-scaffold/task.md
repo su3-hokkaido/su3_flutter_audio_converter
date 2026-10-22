@@ -12,6 +12,8 @@ Each item is sized to one commit.
 - [x] M2: C wrapper header with `su3_convert_start`, `su3_convert_cancel`, `su3_last_error`, `su3_job_release` (`su3_probe` moves to M3/M5, see design.md)
 - [x] M2: wav -> mp3 implementation on a worker thread, C-level tests with ASan/UBSan and `leaks` (`tool/run_native_tests_macos.sh`)
 - [x] M2: regenerate bindings; macOS example app builds and embeds the frameworks
-- [ ] M3: Dart API slice (`AudioFormat`, `ConvertOptions`, `AudioConverter.convert`) with typed exceptions
-- [ ] M3: example app converts wav -> mp3 on macOS
-- [ ] Add a changeset-equivalent entry (CHANGELOG) and run `code-reviewer`, `license-auditor`
+- [x] M3: Dart API slice (`AudioFormat`, `ConvertOptions`, `CancelToken`, `AudioConverter.convert`, `supportedBitrates`) with typed exceptions
+- [x] M3: example app converts a generated wav -> mp3 on macOS; integration tests pass in the real macOS app
+- [x] CHANGELOG entry
+- [x] Run `code-reviewer` and `license-auditor` (before handing M0-M3 over for the PR); both majors fixed (callback lifecycle on failure paths), see design.md
+- [ ] Before the first release: add `licenses/` and README notes for FFmpeg 8.1.3 / LAME 3.100 (license, source, relinking); check the built dylibs are LGPL v2.1+ as expected
