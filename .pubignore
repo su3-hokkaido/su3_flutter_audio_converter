@@ -1,0 +1,41 @@
+# Replaces .gitignore when the package is published (pub reads this file instead of it).
+# The prebuilt FFmpeg and LAME libraries are git-ignored but must be in the package, so they are
+# not listed here (docs/project_plan.md section 6.2). Fetch them first: tool/fetch_prebuilt.sh
+
+# Generated and local
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.DS_Store
+pubspec.lock
+.env*
+coverage/
+doc/api/
+# build/ holds the committed build scripts (kept for the LGPL rebuild notes) next to generated output
+/build/*
+!/build/ffmpeg/
+!/build/versions.env
+**/.gradle/
+**/.cxx/
+**/local.properties
+**/*.iml
+.idea/
+
+# Not part of the package
+/.claude/
+/.github/
+/.git-pr-release
+/CLAUDE.md
+/docs/
+/release-please-config.json
+/.release-please-manifest.json
+
+# The example app: its build output and generated plugin links are never published (.symlinks
+# points back at this package and would duplicate the prebuilt libraries)
+.symlinks/
+ephemeral/
+Pods/
+example/build/
+example/.dart_tool/
+example/pubspec.lock

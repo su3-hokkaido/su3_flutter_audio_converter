@@ -1,0 +1,29 @@
+# Opens and updates the release pull request on main from Conventional Commits (decision #19) and,
+# when it is merged, tags vX.Y.Z and creates the GitHub Release. It bumps the version in
+# pubspec.yaml and CHANGELOG.md; configuration is in release-please-config.json.
+#
+# This does NOT publish to pub.dev. Su publishes by hand after tool/fetch_prebuilt.sh
+# (docs/2026-10-22_07_m7-publish/design.md). Pull requests opened with GITHUB_TOKEN do not trigger
+# CI, so the optional RELEASE_TOKEN secret is used when it is set.
+name: Release Please
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write # release-please labels the release pull request through the issues API
+
+jobs:
+  release-please:
+    name: Release PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json

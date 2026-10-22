@@ -3,6 +3,14 @@ description: "Converts audio files (mp3, m4a, wma, wav, aac) fully on the device
 version: 0.0.1
 repository: https://github.com/su3-hokkaido/su3_flutter_audio_converter
 issue_tracker: https://github.com/su3-hokkaido/su3_flutter_audio_converter/issues
+funding:
+  - https://buymeacoffee.com/su3hokkaido
+topics:
+  - audio
+  - ffmpeg
+  - converter
+  - ffi
+  - mp3
 
 environment:
   sdk: ^3.9.2
