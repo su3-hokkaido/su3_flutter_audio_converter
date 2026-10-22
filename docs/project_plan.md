@@ -323,6 +323,9 @@ abstract class AudioConverter {
 | 17 | C wrapper distribution | Compile `libsu3_audio_core` from source in each plugin build (CMake for Android/Windows, podspec for iOS/macOS). Reasons: it is small, avoids per-ABI wrapper binaries, matches the `plugin_ffi` template, and keeps debugging and AddressSanitizer simple. Only FFmpeg and LAME are prebuilt |
 | 18 | Package license | MIT |
 | 19 | Branch strategy and release tooling | `main` / `develop` with `feature/...` branches. changesets does not support Dart, so release-please (`dart` release type, Conventional Commits) is the planned tool; set up at the publish milestone |
+| 20 | Lossy outputs and channels | MP3, M4A, AAC and WMA outputs are at most stereo; input with 3 or more channels is mixed down. WAV keeps the input channel count |
+| 21 | Unsupported sample rates | When the encoder does not support the input sample rate, the nearest supported rate is used (e.g. 96 kHz -> 48 kHz for MP3 and WMA) |
+| 22 | 8-bit PCM input | 8-bit PCM WAV input produces 16-bit WAV output (no 8-bit PCM encoder is built) |
 
 ### 8.2 Open items
 

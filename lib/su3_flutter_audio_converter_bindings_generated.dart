@@ -26,9 +26,37 @@ class Su3FlutterAudioConverterBindings {
     ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup,
   ) : _lookup = lookup;
 
+  /// Reads information about the best audio stream of the input. Synchronous and quick (it reads the
+  /// header only), but it touches the file system, so call it off the UI isolate. The format is
+  /// detected from the file content, not from its extension. Returns SU3_OK, SU3_ERR_OPEN_INPUT,
+  /// SU3_ERR_UNSUPPORTED_FORMAT (unknown container, no or unsupported audio stream) or
+  /// SU3_ERR_CORRUPTED. On failure *out holds the "unknown" values. Paths are UTF-8.
+  int su3_probe(
+    ffi.Pointer<ffi.Char> input_path,
+    ffi.Pointer<su3_audio_info> out,
+  ) {
+    return _su3_probe(input_path, out);
+  }
+
+  late final _su3_probePtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Pointer<ffi.Char>, ffi.Pointer<su3_audio_info>)
+        >
+      >('su3_probe');
+  late final _su3_probe = _su3_probePtr
+      .asFunction<
+        int Function(ffi.Pointer<ffi.Char>, ffi.Pointer<su3_audio_info>)
+      >();
+
   /// Starts a conversion on a worker thread and returns a job id (> 0), or a negative su3_error value
-  /// when the arguments are invalid. Paths are UTF-8 and are copied. The output file is created only
-  /// when the conversion starts and is removed on failure and cancellation.
+  /// when the arguments are invalid (including identical input and output paths). Paths are UTF-8 and
+  /// are copied. The output file is created only when the conversion starts and is removed on failure
+  /// and cancellation.
+  ///
+  /// The sample rate and channel count of the input are kept. When the encoder does not support the
+  /// input's sample rate, the nearest supported rate is used; lossy outputs (MP3, M4A, AAC, WMA) are
+  /// at most stereo. WAV keeps the PCM bit depth of a PCM input and is 16-bit otherwise.
   int su3_convert_start(
     ffi.Pointer<ffi.Char> input_path,
     ffi.Pointer<ffi.Char> output_path,
@@ -104,7 +132,7 @@ class Su3FlutterAudioConverterBindings {
       .asFunction<void Function(int)>();
 }
 
-/// Output formats. The values match the order of the Dart AudioFormat enum.
+/// Audio formats (input detection and output). The values match the order of the Dart AudioFormat enum.
 enum su3_format {
   SU3_FORMAT_MP3(0),
   SU3_FORMAT_M4A(1),
@@ -195,9 +223,33 @@ final class su3_convert_options extends ffi.Struct {
   @ffi.Int32()
   external int output_format;
 
-  /// ignored for WAV
+  /// MP3, M4A and AAC: 128, 192, 256 or 320. WMA: 128, 192 or 256 (320 fails with
+  /// SU3_ERR_UNSUPPORTED_BITRATE). Ignored for WAV. Validated when the job starts running, so an
+  /// invalid value ends the job with SU3_STATUS_FAILED.
   @ffi.Int32()
   external int bitrate_kbps;
+}
+
+/// Result of su3_probe. Unknown numeric values are -1 (sample_rate and channels are 0 when unknown).
+final class su3_audio_info extends ffi.Struct {
+  /// su3_format of the container, detected from the content; -1 if unknown
+  @ffi.Int32()
+  external int format;
+
+  /// -1 if unknown
+  @ffi.Int64()
+  external int duration_ms;
+
+  /// Hz
+  @ffi.Int32()
+  external int sample_rate;
+
+  @ffi.Int32()
+  external int channels;
+
+  /// bits per second of the audio stream; -1 if unknown
+  @ffi.Int64()
+  external int bitrate_bps;
 }
 
 /// progress is 0.0 to 1.0 (or negative when the input duration is unknown). error_code is

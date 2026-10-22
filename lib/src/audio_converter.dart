@@ -1,4 +1,5 @@
 import 'audio_format.dart';
+import 'audio_info.dart';
 import 'cancel_token.dart';
 import 'convert_options.dart';
 import 'native_audio_converter.dart';
@@ -22,5 +23,14 @@ abstract interface class AudioConverter {
   });
 
   /// Selectable bitrates for [format] in kbps (empty for WAV).
-  List<int> supportedBitrates(AudioFormat format);
+  ///
+  /// With [input] (the probe result of the file to convert) the list is narrowed where the encoder
+  /// cannot honour a value (docs/project_plan.md section 3.2): MP3 from input below 32 kHz offers
+  /// only 128. `convert` rejects the other values with `UnsupportedBitrateException`.
+  List<int> supportedBitrates(AudioFormat format, {AudioInfo? input});
+
+  /// Reads the properties of [inputPath]. The format is detected from the content.
+  ///
+  /// Fails with `ConversionException` subclasses (missing file, unknown format, corrupted data).
+  Future<AudioInfo> probe(String inputPath);
 }

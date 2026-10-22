@@ -30,7 +30,24 @@ final written = await converter.convert(
 );
 ```
 
-Only conversion to MP3 on macOS works so far.
+Read the properties of a file, offer only the bitrates the encoder honours, and pick a free output
+name:
+
+```dart
+final info = await converter.probe('/path/to/recording.wav'); // format, duration, rate, channels
+final bitrates = converter.supportedBitrates(AudioFormat.mp3, input: info);
+final outputPath = resolveUniqueOutputPath('/path/to', 'recording', AudioFormat.mp3);
+// -> /path/to/recording.mp3, or "recording (1).mp3" if that name is taken
+```
+
+Notes:
+
+- MP3 from input below 32 kHz is limited by the format to 160 kbps (64 kbps at 12 kHz and below), so
+  only 128 kbps is offered there.
+- Lossy outputs are at most stereo; input with more channels is mixed down. When an encoder does not
+  support the input sample rate, the nearest supported rate is used. 8-bit WAV input gives 16-bit
+  WAV output.
+- Only macOS works so far.
 
 ## Licenses
 
