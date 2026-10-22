@@ -17,6 +17,6 @@ set_target_properties(su3_flutter_audio_converter PROPERTIES
 target_compile_definitions(su3_flutter_audio_converter PUBLIC DART_SHARED_LIB)
 
 if (ANDROID)
-  # Support Android 15 16k page size
+  # Support Android 15 16k page size.
   target_link_options(su3_flutter_audio_converter PRIVATE "-Wl,-z,max-page-size=16384")
 endif()

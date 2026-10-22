@@ -1,0 +1,22 @@
+PODS:
+  - FlutterMacOS (1.0.0)
+  - su3_flutter_audio_converter (0.0.1):
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - FlutterMacOS (from `Flutter/ephemeral`)
+  - su3_flutter_audio_converter (from `Flutter/ephemeral/.symlinks/plugins/su3_flutter_audio_converter/macos`)
+
+EXTERNAL SOURCES:
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+  su3_flutter_audio_converter:
+    :path: Flutter/ephemeral/.symlinks/plugins/su3_flutter_audio_converter/macos
+
+SPEC CHECKSUMS:
+  FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
+  su3_flutter_audio_converter: 0ba86a44955332cb3b70c554e6831e788f420446
+
+PODFILE CHECKSUM: 932ba82a6897fbbe7c982dccf2b530591f4e4baf
+
+COCOAPODS: 1.17.0

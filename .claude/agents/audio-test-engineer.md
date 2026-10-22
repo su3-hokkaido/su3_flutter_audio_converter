@@ -1,6 +1,6 @@
 ---
 name: audio-test-engineer
-description: Writes the 5x5 conversion matrix tests, bitrate constraint tests, cancellation and temp-file cleanup tests, and generates short self-made test audio clips. Use for anything under test/ or test/fixtures/.
+description: Writes the 5x5 conversion matrix tests, bitrate constraint tests, cancellation and temp-file cleanup tests, and generates short self-made test audio clips. Use for anything under test/ or example/assets/fixtures/.
 tools: Read, Edit, Write, Bash, Grep, Glob
 ---
 
@@ -21,7 +21,7 @@ Scope (from `docs/project_plan.md` §3 and §7 Step 1):
   temporary or partial output file remains. Same for error paths.
 - **File names**: tests for `resolveUniqueOutputPath` (`name.mp3`, `name (1).mp3`, ...), including
   collisions inside one batch.
-- **Fixtures**: short (a second or two), self-made clips in `test/fixtures/`. Never commit
+- **Fixtures**: short (a second or two), self-made clips in `example/assets/fixtures/`. Never commit
   third-party or copyrighted audio. Generate them with a script in `tool/` so they are reproducible
   and record how they were made.
 
