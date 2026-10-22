@@ -13,8 +13,7 @@ Check:
 3. FFmpeg / LAME are dynamically linked (LGPL relinking requirement)
 4. `licenses/` and the README list each bundled component's license, version and source location
 5. The license of every dependency in pubspec.yaml (report any GPL-family license as critical)
-6. The package's own LICENSE matches the decision recorded in the plan (§8.2 #5 is still open until
-   the user decides; report it as pending, do not assume)
+6. The package's own LICENSE is MIT, as decided in the plan (§8.1 #18)
 
 Use only read-only commands (e.g. `dart pub deps`, `grep`). Report the results as a table of
 "OK / Needs fixing (with severity)".

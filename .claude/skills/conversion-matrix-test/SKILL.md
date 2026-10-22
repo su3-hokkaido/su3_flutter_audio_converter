@@ -12,5 +12,4 @@ description: Run the 5x5 format conversions across the supported bitrates and re
 4. Report a table: input, output, bitrate, result (pass/fail/skipped), probed format, duration
    versus expected (with tolerance), probed bitrate, sample rate, channels.
 5. Check that no temporary or partial files remain in the output and temp directories.
-6. Call out WMA 320 kbps results explicitly: it is an open decision (plan §8.2 #3), so report what
-   happened and do not change the supported-bitrate table.
+6. WMA 320 kbps is not offered (plan §8.1 #16); confirm it is rejected rather than converted.

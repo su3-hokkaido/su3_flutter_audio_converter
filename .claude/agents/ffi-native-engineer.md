@@ -21,8 +21,8 @@ Design (from `docs/project_plan.md` §5.2):
   return value; cancellation must stop the worker, free resources and delete the partial output.
 - Map native error codes to the typed Dart exceptions (`UnsupportedFormatException`,
   `UnsupportedBitrateException`, `CorruptedFileException`, `ConversionCancelledException`).
-- Whether the wrapper is bundled as a binary or compiled from source in each plugin build is an
-  open item (§8.2 #4); do not decide it without asking the user.
+- The wrapper is compiled from source in each plugin build (CMake / podspec), not bundled as a
+  binary (§8.1 #17). Only FFmpeg and LAME are prebuilt.
 - No network code. FFmpeg and LAME are linked dynamically.
 
 Verify memory behaviour with AddressSanitizer on macOS where possible, and keep `flutter analyze`

@@ -16,7 +16,7 @@ steps §7, decisions §8, Claude Code environment §10).
 - Run independent tool calls **in parallel**, not sequentially.
 - **No emojis** anywhere (code, comments, docs, commits, PRs).
 - Do not implement guesses for unclear points or spec branches; raise them as questions
-  (`docs/project_plan.md` §8.2 lists the open items).
+  (§8.2 currently has no open items; new questions go there).
 - Keep `flutter analyze` and `flutter test` passing after every change.
 
 ## Language conventions
