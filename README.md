@@ -62,7 +62,15 @@ https://buymeacoffee.com/su3hokkaido
 
 ## Development
 
-Prebuilt FFmpeg and LAME libraries are not committed. On macOS:
+Prebuilt FFmpeg and LAME libraries are not committed. Fetch the ones published as a GitHub Release
+(the tag is `PREBUILT_TAG` in `build/versions.env`; the Release also carries the sources and build
+scripts):
+
+```
+tool/fetch_prebuilt.sh                # all platforms, or name them: macos ios android windows
+```
+
+Or build them yourself. On macOS:
 
 ```
 build/ffmpeg/fetch_sources.sh         # download and verify the pinned sources

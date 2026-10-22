@@ -329,6 +329,7 @@ abstract class AudioConverter {
 | 23 | Windows FFmpeg build | `build/ffmpeg/build_windows.sh` run in MSYS2 with the MSVC toolchain (`--toolchain=msvc`, x64); LAME is compiled from its unmodified sources with `cl` and without SSE. Outputs go to the git-ignored `prebuilt/windows/{bin,lib,include}` |
 | 24 | iOS minimum version | iOS 15.0 (raised from Flutter's 13.0, because Xcode 27 supports deployment targets from 15.0). Set in `build/versions.env`, the podspec and the example Podfile |
 | 25 | Android build inputs | The prebuilt `.so` files are built with NDK 27.0.12077973 and API level 24 (`build/versions.env`); an app using a different NDK is accepted because the wrapper and FFmpeg use only the C API. `android/build.gradle` limits ABIs to arm64-v8a, armeabi-v7a and x86_64 (32-bit x86 is not built) |
+| 26 | Prebuilt Release workflow | `.github/workflows/prebuilt.yml` builds each OS on its own runner and creates a GitHub Release on a `prebuilt-v<N>` tag (must equal `PREBUILT_TAG` in `build/versions.env`); `workflow_dispatch` only produces workflow artifacts. Release assets: `su3-prebuilt-{macos,ios,android,windows}.tar.gz` (repository-relative paths, extracted at the repository root by `tool/fetch_prebuilt.sh`), the FFmpeg and LAME source tarballs, `su3-build-scripts.tar.gz`, `BUILD-INFO.txt`, `SHA256SUMS`. Prebuilt tags are independent of the package version |
 
 ### 8.2 Open items
 
