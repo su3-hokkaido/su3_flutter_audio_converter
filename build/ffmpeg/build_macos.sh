@@ -4,7 +4,9 @@
 #
 # The configure flags mirror docs/project_plan.md section 5.3 and
 # .claude/skills/ffmpeg-build/configure-flags.md. Do not widen them without recording the reason.
-# Run build/ffmpeg/fetch_sources.sh first.
+# Run build/ffmpeg/fetch_sources.sh first. The output is long; keep a log with:
+#   build/ffmpeg/build_macos.sh > build/work/build.log 2>&1
+# (macOS ships bash 3.2, so empty arrays are expanded with the ${arr[@]+...} form under set -u.)
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -25,8 +27,7 @@ for arch in "${archs[@]}"; do
   prefix="$work/build-macos/$arch/prefix"
   mkdir -p "$prefix" "$work/build-macos/$arch/lame" "$work/build-macos/$arch/ffmpeg"
   cflags="-arch $arch -mmacosx-version-min=$MACOS_DEPLOYMENT_TARGET"
-  host_args=()
-  [ "$arch" = "arm64" ] && host_args=(--host=aarch64-apple-darwin) || host_args=(--host=x86_64-apple-darwin)
+  if [ "$arch" = "arm64" ]; then host_args=(--host=aarch64-apple-darwin); else host_args=(--host=x86_64-apple-darwin); fi
 
   # LAME: library only (no frontend), shared.
   tar -xzf "$src/lame-$LAME_VERSION.tar.gz" -C "$work/build-macos/$arch/lame" --strip-components=1
@@ -53,7 +54,7 @@ for arch in "${archs[@]}"; do
       --cc="clang -arch $arch" \
       --extra-cflags="$cflags -I$prefix/include" \
       --extra-ldflags="$cflags -L$prefix/lib" \
-      "${asm_args[@]}" \
+      ${asm_args[@]+"${asm_args[@]}"} \
       --disable-everything \
       --disable-programs --disable-doc --disable-debug \
       --disable-avdevice --disable-avfilter --disable-swscale \
