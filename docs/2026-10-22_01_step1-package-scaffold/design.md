@@ -136,6 +136,23 @@ link the prebuilt libraries yet.
 - Not done (later milestones): single source for the bitrate table (Dart vs C), unit tests for the
   native error mapping, typed exception assertions in the missing/garbage input integration tests.
 
+## M5 results
+
+- Decisions recorded in project_plan 8.1 #20-#22 (stereo cap, nearest sample rate, 8-bit -> 16-bit).
+- Measured encoder behaviour (3 s white noise, probe of the output):
+  - MP3: >= 32 kHz honours 128/192/256/320; 16-24 kHz gives 128 for 128 and 160 for anything higher;
+    <= 12 kHz is fixed at 64 kbps (even for 128). Hence `supportedBitrates` offers [128] below
+    32 kHz and `convert` probes the input to reject higher values. At <= 12 kHz the output is still
+    64 kbps; no offered value can be honoured there.
+  - AAC / M4A (FFmpeg `aac`): undershoots, e.g. stereo 44.1 kHz gives 126/188/252/320, mono 44.1 kHz
+    gives 124/191/201/201, 22.05 kHz mono about 100 for every request. Not a hard cap, so the list
+    is not narrowed; tests use a generous lower bound.
+  - WMA (wmav2): 192 and 256 produce the same size on simple signals; 320 is rejected (decision #16).
+- Corrupted packets in the middle of a file fail the whole conversion (by design for now).
+- Integration tests: run the files one at a time (`flutter test integration_test/matrix_test.dart -d
+  macos`); running both files in one invocation fails to launch the second app instance.
+- Windows branches (`_wremove`, same-file check by `strcmp`) are written but not compiled here.
+
 ## Open questions
 
 None blocking. The final native library name is decided at M2 (see above).

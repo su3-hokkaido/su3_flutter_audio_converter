@@ -17,3 +17,13 @@ Each item is sized to one commit.
 - [x] CHANGELOG entry
 - [x] Run `code-reviewer` and `license-auditor` (before handing M0-M3 over for the PR); both majors fixed (callback lifecycle on failure paths), see design.md
 - [ ] Before the first release: add `licenses/` and README notes for FFmpeg 8.1.3 / LAME 3.100 (license, source, relinking); check the built dylibs are LGPL v2.1+ as expected
+
+## M5 (all 5x5 paths, bitrate constraints, probe)
+
+- [x] C core: 5 inputs x 5 outputs, `su3_probe`, bitrate validation, nearest sample rate, stereo cap
+- [x] Dart: `probe`, `AudioInfo`, `supportedBitrates(format, {input})`, `resolveUniqueOutputPath`
+- [x] Tests: native 25 pairs (ASan/UBSan, leaks), unit tests, fixtures, macOS 5x5 integration matrix
+- [x] `code-reviewer` run; findings fixed (probe on an isolate, double completion, Windows UTF-8 delete,
+  error mapping, flush loop, locking, same-file check)
+- [ ] Windows branches of the C code (`_wremove`, same-file check) are uncompiled until M4
+- [ ] Run `license-auditor` again before the PR (no dependency changes in M5)

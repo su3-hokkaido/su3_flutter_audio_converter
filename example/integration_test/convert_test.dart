@@ -100,32 +100,43 @@ void main() {
     );
   });
 
-  testWidgets('a missing input is a ConversionException', (_) async {
-    await expectLater(
-      converter.convert(
-        inputPath: '${dir.path}/missing.wav',
-        outputPath: '${dir.path}/missing.mp3',
-        options: const ConvertOptions(outputFormat: AudioFormat.mp3),
-      ),
-      throwsA(isA<ConversionException>()),
-    );
-    expect(File('${dir.path}/missing.mp3').existsSync(), isFalse);
-  });
+  testWidgets(
+    'a missing input fails with a plain ConversionException (code 2)',
+    (_) async {
+      await expectLater(
+        converter.convert(
+          inputPath: '${dir.path}/missing.wav',
+          outputPath: '${dir.path}/missing.mp3',
+          options: const ConvertOptions(outputFormat: AudioFormat.mp3),
+        ),
+        // SU3_ERR_OPEN_INPUT (2) has no subclass of its own.
+        throwsA(
+          isA<ConversionException>()
+              .having((e) => e.runtimeType, 'type', ConversionException)
+              .having((e) => e.nativeErrorCode, 'nativeErrorCode', 2),
+        ),
+      );
+      expect(File('${dir.path}/missing.mp3').existsSync(), isFalse);
+    },
+  );
 
-  testWidgets('a garbage input is rejected without output', (_) async {
-    File(
-      '${dir.path}/garbage.wav',
-    ).writeAsBytesSync(List<int>.generate(4096, (int i) => (i * 31) & 0xFF));
-    await expectLater(
-      converter.convert(
-        inputPath: '${dir.path}/garbage.wav',
-        outputPath: '${dir.path}/garbage.mp3',
-        options: const ConvertOptions(outputFormat: AudioFormat.mp3),
-      ),
-      throwsA(isA<ConversionException>()),
-    );
-    expect(File('${dir.path}/garbage.mp3').existsSync(), isFalse);
-  });
+  testWidgets(
+    'a garbage input is an UnsupportedFormatException without output',
+    (_) async {
+      File(
+        '${dir.path}/garbage.wav',
+      ).writeAsBytesSync(List<int>.generate(4096, (int i) => (i * 31) & 0xFF));
+      await expectLater(
+        converter.convert(
+          inputPath: '${dir.path}/garbage.wav',
+          outputPath: '${dir.path}/garbage.mp3',
+          options: const ConvertOptions(outputFormat: AudioFormat.mp3),
+        ),
+        throwsA(isA<UnsupportedFormatException>()),
+      );
+      expect(File('${dir.path}/garbage.mp3').existsSync(), isFalse);
+    },
+  );
 
   testWidgets('several conversions can run at the same time', (_) async {
     final String input = await writeSampleWav(

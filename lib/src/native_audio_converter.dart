@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:ffi';
+import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 
 import '../su3_flutter_audio_converter_bindings_generated.dart';
 import 'audio_converter.dart';
 import 'audio_format.dart';
+import 'audio_info.dart';
 import 'cancel_token.dart';
 import 'convert_options.dart';
 import 'exceptions.dart';
@@ -23,19 +26,64 @@ const int _errCancelled = 7;
 
 const int _errorMessageSize = 512;
 
+const List<int> _allBitrates = <int>[128, 192, 256, 320];
+
+/// MP3 below 32 kHz uses MPEG-2 / 2.5 Layer III, which tops out at 160 kbps (64 kbps at 12 kHz and
+/// below), so 192 kbps and up are silently capped by the encoder. Only 128 is offered there; at
+/// 12 kHz and below the encoder still writes 64 kbps (measured in M5, docs design notes).
+List<int> _mp3Bitrates(int? inputSampleRate) =>
+    inputSampleRate != null && inputSampleRate < 32000
+    ? const <int>[128]
+    : _allBitrates;
+
 /// [AudioConverter] implemented on top of the native core through `dart:ffi`.
 class NativeAudioConverter implements AudioConverter {
   NativeAudioConverter();
 
   @override
-  List<int> supportedBitrates(AudioFormat format) => switch (format) {
-    AudioFormat.wav => const <int>[],
-    // The WMAv2 encoder is not offered at 320 kbps (docs/project_plan.md decision #16).
-    AudioFormat.wma => const <int>[128, 192, 256],
-    AudioFormat.mp3 ||
-    AudioFormat.m4a ||
-    AudioFormat.aac => const <int>[128, 192, 256, 320],
-  };
+  List<int> supportedBitrates(AudioFormat format, {AudioInfo? input}) {
+    return switch (format) {
+      AudioFormat.wav => const <int>[],
+      // The WMAv2 encoder is not offered at 320 kbps (docs/project_plan.md decision #16).
+      AudioFormat.wma => const <int>[128, 192, 256],
+      AudioFormat.mp3 => _mp3Bitrates(input?.sampleRate),
+      AudioFormat.m4a || AudioFormat.aac => _allBitrates,
+    };
+  }
+
+  @override
+  Future<AudioInfo> probe(String inputPath) async {
+    // su3_probe opens the file and reads stream info synchronously, which can be slow for damaged
+    // files or slow storage, so it runs on a short-lived isolate (it loads its own bindings).
+    final _ProbeResult result = await Isolate.run(
+      () => _probeNative(inputPath),
+    );
+    if (result.code != 0) {
+      throw _exceptionFor(
+        result.code,
+        'The file could not be read: $inputPath',
+      );
+    }
+    final bool known =
+        result.format >= 0 && result.format < AudioFormat.values.length;
+    if (!known) {
+      throw UnsupportedFormatException(
+        'The audio format is not supported: $inputPath',
+        nativeErrorCode: _errUnsupportedFormat,
+      );
+    }
+    return AudioInfo(
+      format: AudioFormat.values[result.format],
+      duration: result.durationMs < 0
+          ? null
+          : Duration(milliseconds: result.durationMs),
+      sampleRate: result.sampleRate > 0 ? result.sampleRate : null,
+      channels: result.channels > 0 ? result.channels : null,
+      bitrateKbps: result.bitrateBps < 0
+          ? null
+          : (result.bitrateBps / 1000).round(),
+    );
+  }
 
   @override
   Future<String> convert({
@@ -56,6 +104,19 @@ class NativeAudioConverter implements AudioConverter {
     }
     if (cancelToken != null && cancelToken.isCancelled) {
       throw const ConversionCancelledException();
+    }
+    if (format == AudioFormat.mp3 && bitrate != _allBitrates.first) {
+      // Rates below 32 kHz limit the MP3 bitrate; the input has to be probed to know.
+      final AudioInfo info = await probe(inputPath);
+      if (!supportedBitrates(format, input: info).contains(bitrate)) {
+        throw UnsupportedBitrateException(
+          '$bitrate kbps is not supported for mp3 at ${info.sampleRate} Hz; '
+          'use one of ${supportedBitrates(format, input: info)}',
+        );
+      }
+      if (cancelToken != null && cancelToken.isCancelled) {
+        throw const ConversionCancelledException();
+      }
     }
 
     final Su3FlutterAudioConverterBindings bindings = nativeBindings;
@@ -78,17 +139,20 @@ class NativeAudioConverter implements AudioConverter {
       int errorCode,
     ) {
       if (status == _statusDone) {
+        // A progress callback that threw earlier has already completed the future with its error.
         try {
           onProgress?.call(1.0);
         } catch (error, stackTrace) {
           bindings.su3_job_release(id);
           finish();
-          completer.completeError(error, stackTrace);
+          if (!completer.isCompleted) {
+            completer.completeError(error, stackTrace);
+          }
           return;
         }
         bindings.su3_job_release(id);
         finish();
-        completer.complete(outputPath);
+        if (!completer.isCompleted) completer.complete(outputPath);
       } else if (status == _statusFailed || status == _statusCancelled) {
         Object? failure;
         StackTrace? failureTrace;
@@ -102,7 +166,9 @@ class NativeAudioConverter implements AudioConverter {
           bindings.su3_job_release(id);
         } finally {
           finish();
-          completer.completeError(failure, failureTrace);
+          if (!completer.isCompleted) {
+            completer.completeError(failure, failureTrace);
+          }
         }
       } else if (progress >= 0 && onProgress != null) {
         try {
@@ -121,8 +187,8 @@ class NativeAudioConverter implements AudioConverter {
     Pointer<Utf8>? output;
     Pointer<su3_convert_options>? nativeOptions;
     try {
-      input = inputPath.toNativeUtf8();
-      output = outputPath.toNativeUtf8();
+      input = inputPath.toNativeUtf8(allocator: calloc);
+      output = outputPath.toNativeUtf8(allocator: calloc);
       nativeOptions = calloc<su3_convert_options>();
       nativeOptions.ref.output_format = format.index;
       nativeOptions.ref.bitrate_kbps = bitrate;
@@ -153,6 +219,44 @@ class NativeAudioConverter implements AudioConverter {
       if (cancelToken.isCancelled) cancelListener();
     }
     return completer.future;
+  }
+}
+
+class _ProbeResult {
+  const _ProbeResult(
+    this.code,
+    this.format,
+    this.durationMs,
+    this.sampleRate,
+    this.channels,
+    this.bitrateBps,
+  );
+
+  final int code;
+  final int format;
+  final int durationMs;
+  final int sampleRate;
+  final int channels;
+  final int bitrateBps;
+}
+
+_ProbeResult _probeNative(String inputPath) {
+  final Pointer<Utf8> path = inputPath.toNativeUtf8(allocator: calloc);
+  final Pointer<su3_audio_info> info = calloc<su3_audio_info>();
+  try {
+    final int code = nativeBindings.su3_probe(path.cast(), info);
+    final su3_audio_info ref = info.ref;
+    return _ProbeResult(
+      code,
+      ref.format,
+      ref.duration_ms,
+      ref.sample_rate,
+      ref.channels,
+      ref.bitrate_bps,
+    );
+  } finally {
+    calloc.free(path);
+    calloc.free(info);
   }
 }
 
@@ -188,3 +292,8 @@ ConversionException _exceptionFor(int code, String message) {
     _ => ConversionException(message, nativeErrorCode: code),
   };
 }
+
+/// Test access to the mapping of native error codes to exceptions.
+@visibleForTesting
+ConversionException exceptionForNativeError(int code, String message) =>
+    _exceptionFor(code, message);
