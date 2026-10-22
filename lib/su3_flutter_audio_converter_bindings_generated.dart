@@ -26,32 +26,191 @@ class Su3FlutterAudioConverterBindings {
     ffi.Pointer<T> Function<T extends ffi.NativeType>(String symbolName) lookup,
   ) : _lookup = lookup;
 
-  /// A very short-lived native function.
-  ///
-  /// For very short-lived functions, it is fine to call them on the main isolate.
-  /// They will block the Dart execution while running the native function, so
-  /// only do this for native functions which are guaranteed to be short-lived.
-  int sum(int a, int b) {
-    return _sum(a, b);
+  /// Starts a conversion on a worker thread and returns a job id (> 0), or a negative su3_error value
+  /// when the arguments are invalid. Paths are UTF-8 and are copied. The output file is created only
+  /// when the conversion starts and is removed on failure and cancellation.
+  int su3_convert_start(
+    ffi.Pointer<ffi.Char> input_path,
+    ffi.Pointer<ffi.Char> output_path,
+    ffi.Pointer<su3_convert_options> options,
+    su3_job_callback callback,
+  ) {
+    return _su3_convert_start(input_path, output_path, options, callback);
   }
 
-  late final _sumPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int, ffi.Int)>>('sum');
-  late final _sum = _sumPtr.asFunction<int Function(int, int)>();
+  late final _su3_convert_startPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int64 Function(
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<ffi.Char>,
+            ffi.Pointer<su3_convert_options>,
+            su3_job_callback,
+          )
+        >
+      >('su3_convert_start');
+  late final _su3_convert_start = _su3_convert_startPtr
+      .asFunction<
+        int Function(
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<ffi.Char>,
+          ffi.Pointer<su3_convert_options>,
+          su3_job_callback,
+        )
+      >();
 
-  /// A longer lived native function, which occupies the thread calling it.
-  ///
-  /// Do not call these kind of native functions in the main isolate. They will
-  /// block Dart execution. This will cause dropped frames in Flutter applications.
-  /// Instead, call these native functions on a separate isolate.
-  int sum_long_running(int a, int b) {
-    return _sum_long_running(a, b);
+  /// Requests cancellation. Safe to call at any time, including for finished or unknown jobs.
+  void su3_convert_cancel(int job_id) {
+    return _su3_convert_cancel(job_id);
   }
 
-  late final _sum_long_runningPtr =
-      _lookup<ffi.NativeFunction<ffi.Int Function(ffi.Int, ffi.Int)>>(
-        'sum_long_running',
+  late final _su3_convert_cancelPtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'su3_convert_cancel',
       );
-  late final _sum_long_running = _sum_long_runningPtr
-      .asFunction<int Function(int, int)>();
+  late final _su3_convert_cancel = _su3_convert_cancelPtr
+      .asFunction<void Function(int)>();
+
+  /// Copies the last error message of the job into buffer (NUL-terminated, truncated to buffer_size).
+  /// Returns the job's error code, or SU3_ERR_INVALID_ARGUMENT for an unknown job.
+  int su3_last_error(
+    int job_id,
+    ffi.Pointer<ffi.Char> buffer,
+    int buffer_size,
+  ) {
+    return _su3_last_error(job_id, buffer, buffer_size);
+  }
+
+  late final _su3_last_errorPtr =
+      _lookup<
+        ffi.NativeFunction<
+          ffi.Int32 Function(ffi.Int64, ffi.Pointer<ffi.Char>, ffi.Size)
+        >
+      >('su3_last_error');
+  late final _su3_last_error = _su3_last_errorPtr
+      .asFunction<int Function(int, ffi.Pointer<ffi.Char>, int)>();
+
+  /// Waits for the worker thread of a finished job and frees the job. Call it once after the terminal
+  /// callback has been received. Releasing a running job waits for it to end.
+  void su3_job_release(int job_id) {
+    return _su3_job_release(job_id);
+  }
+
+  late final _su3_job_releasePtr =
+      _lookup<ffi.NativeFunction<ffi.Void Function(ffi.Int64)>>(
+        'su3_job_release',
+      );
+  late final _su3_job_release = _su3_job_releasePtr
+      .asFunction<void Function(int)>();
 }
+
+/// Output formats. The values match the order of the Dart AudioFormat enum.
+enum su3_format {
+  SU3_FORMAT_MP3(0),
+  SU3_FORMAT_M4A(1),
+  SU3_FORMAT_WMA(2),
+  SU3_FORMAT_WAV(3),
+  SU3_FORMAT_AAC(4);
+
+  final int value;
+  const su3_format(this.value);
+
+  static su3_format fromValue(int value) => switch (value) {
+    0 => SU3_FORMAT_MP3,
+    1 => SU3_FORMAT_M4A,
+    2 => SU3_FORMAT_WMA,
+    3 => SU3_FORMAT_WAV,
+    4 => SU3_FORMAT_AAC,
+    _ => throw ArgumentError("Unknown value for su3_format: $value"),
+  };
+}
+
+/// Job states reported to the callback.
+enum su3_status {
+  /// progress update
+  SU3_STATUS_RUNNING(0),
+
+  /// finished; the output file is complete
+  SU3_STATUS_DONE(1),
+
+  /// failed; see error_code and su3_last_error
+  SU3_STATUS_FAILED(2),
+
+  /// cancelled; the partial output file was removed
+  SU3_STATUS_CANCELLED(3);
+
+  final int value;
+  const su3_status(this.value);
+
+  static su3_status fromValue(int value) => switch (value) {
+    0 => SU3_STATUS_RUNNING,
+    1 => SU3_STATUS_DONE,
+    2 => SU3_STATUS_FAILED,
+    3 => SU3_STATUS_CANCELLED,
+    _ => throw ArgumentError("Unknown value for su3_status: $value"),
+  };
+}
+
+/// Error codes. The Dart side maps them to typed exceptions.
+enum su3_error {
+  SU3_OK(0),
+  SU3_ERR_INVALID_ARGUMENT(1),
+
+  /// input missing or unreadable
+  SU3_ERR_OPEN_INPUT(2),
+
+  /// no audio stream, unknown or unimplemented format
+  SU3_ERR_UNSUPPORTED_FORMAT(3),
+
+  /// input data could not be decoded
+  SU3_ERR_CORRUPTED(4),
+  SU3_ERR_UNSUPPORTED_BITRATE(5),
+
+  /// output could not be created or written
+  SU3_ERR_IO(6),
+  SU3_ERR_CANCELLED(7),
+  SU3_ERR_OUT_OF_MEMORY(8),
+  SU3_ERR_INTERNAL(9);
+
+  final int value;
+  const su3_error(this.value);
+
+  static su3_error fromValue(int value) => switch (value) {
+    0 => SU3_OK,
+    1 => SU3_ERR_INVALID_ARGUMENT,
+    2 => SU3_ERR_OPEN_INPUT,
+    3 => SU3_ERR_UNSUPPORTED_FORMAT,
+    4 => SU3_ERR_CORRUPTED,
+    5 => SU3_ERR_UNSUPPORTED_BITRATE,
+    6 => SU3_ERR_IO,
+    7 => SU3_ERR_CANCELLED,
+    8 => SU3_ERR_OUT_OF_MEMORY,
+    9 => SU3_ERR_INTERNAL,
+    _ => throw ArgumentError("Unknown value for su3_error: $value"),
+  };
+}
+
+final class su3_convert_options extends ffi.Struct {
+  /// su3_format
+  @ffi.Int32()
+  external int output_format;
+
+  /// ignored for WAV
+  @ffi.Int32()
+  external int bitrate_kbps;
+}
+
+/// progress is 0.0 to 1.0 (or negative when the input duration is unknown). error_code is
+/// meaningful only for SU3_STATUS_FAILED. After a terminal status (DONE, FAILED, CANCELLED) no more
+/// callbacks are made for the job.
+typedef su3_job_callback =
+    ffi.Pointer<ffi.NativeFunction<su3_job_callbackFunction>>;
+typedef su3_job_callbackFunction =
+    ffi.Void Function(
+      ffi.Int64 job_id,
+      ffi.Double progress,
+      ffi.Int32 status,
+      ffi.Int32 error_code,
+    );
+typedef Dartsu3_job_callbackFunction =
+    void Function(int job_id, double progress, int status, int error_code);

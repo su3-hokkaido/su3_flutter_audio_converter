@@ -41,3 +41,4 @@ doc/api/
 *.dll
 *.so
 *.dylib
+/prebuilt/

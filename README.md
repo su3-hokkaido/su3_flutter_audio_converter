@@ -25,3 +25,14 @@ locations will be listed in `licenses/` and in this README before the first rele
 
 If this package is useful to you, you can support its development:
 https://buymeacoffee.com/su3hokkaido
+
+## Development
+
+Prebuilt FFmpeg and LAME libraries are not committed. On macOS:
+
+```
+build/ffmpeg/fetch_sources.sh         # download and verify the pinned sources
+build/ffmpeg/build_macos.sh           # build universal dylibs into build/work/out/macos
+build/ffmpeg/package_macos.sh         # create macos/Frameworks/*.xcframework and prebuilt/include
+tool/run_native_tests_macos.sh        # native tests (add --leaks for the leak check)
+```

@@ -77,6 +77,32 @@ Findings to act on:
   `tool/fetch_prebuilt.sh`. Doing it as the first step of M2 keeps the wrapper buildable.
 - The x86_64 slice needs Rosetta on Apple-silicon build machines (LAME runs its configure tests).
 
+## M2 results (C wrapper, macOS)
+
+- Library name: kept as the package name `su3_flutter_audio_converter` (the `plugin_ffi` loader and
+  CMake expect it); "libsu3_audio_core" in the plan is a conceptual name only.
+- Header: `su3_convert_start` / `su3_convert_cancel` / `su3_last_error` / `su3_job_release`.
+  `su3_job_release` was added: the job (and its error message) stays valid until Dart has read it,
+  because the callback arrives asynchronously through `NativeCallable.listener`.
+  `su3_probe` is not written yet; it comes with the Dart API (M3) because `AudioInfo` is needed.
+- Implemented: any decodable input to MP3 (mono or stereo, input sample rate, 128/192/256/320 kbps),
+  progress every 1%, cancellation with removal of the partial output, error codes for missing input,
+  corrupt input, unsupported bitrate and not-yet-implemented output formats.
+- Tests: `tool/run_native_tests_macos.sh` builds `test/native/test_convert.c` with the wrapper under
+  AddressSanitizer and UndefinedBehaviorSanitizer (all pass); `--leaks` runs it without sanitizers
+  under the system `leaks` tool (0 leaks). LeakSanitizer is not available on Apple silicon.
+  The cancel test accepts "done" as well as "cancelled" because a fast conversion can win the race;
+  it checks that a cancelled job leaves no file and that exactly one terminal callback is sent.
+- The example app builds for macOS and embeds the five frameworks plus the plugin framework, which
+  exports the `su3_*` symbols and links the FFmpeg frameworks. It has not been run yet (M3).
+- Toolchain finding: the installed Xcode rejects macOS deployment targets below 12.0, while Flutter
+  3.35's macOS pods still use 10.15. The example's Podfile overrides the pod targets to 12.0 and the
+  Runner uses 12.0. The package's podspec still declares 10.15; revisit when preparing the release.
+
+Not verified: the Windows branches of the threading code (written but never compiled), and the iOS,
+Android and Windows builds, which are broken until milestone 4 because their build files do not
+link the prebuilt libraries yet.
+
 ## Open questions
 
 None blocking. The final native library name is decided at M2 (see above).
