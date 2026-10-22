@@ -103,6 +103,39 @@ Not verified: the Windows branches of the threading code (written but never comp
 Android and Windows builds, which are broken until milestone 4 because their build files do not
 link the prebuilt libraries yet.
 
+## M3 results (Dart API, macOS)
+
+- Public API: `AudioConverter` (abstract interface with a factory returning `NativeAudioConverter`,
+  so tests and apps can substitute a fake), `ConvertOptions`, `CancelToken`, `AudioFormat`, and the
+  exceptions `UnsupportedFormatException`, `UnsupportedBitrateException`, `CorruptedFileException`,
+  `ConversionCancelledException` under the base `ConversionException` (which also carries missing
+  input, I/O and internal errors with the native error code).
+- `supportedBitrates(format)` has no `input` argument yet; it arrives with `probe` and `AudioInfo`
+  (the plan's `supportedBitrates(format, {AudioInfo? input})`). `probe` is not implemented.
+- Validation (bitrate against the per-format table, token already cancelled) happens in Dart before
+  any native call.
+- Progress and completion use `NativeCallable.listener`; each conversion owns one callable that is
+  closed after the terminal event, and the native job is released then.
+- The example app converts a generated 3 minute sine WAV (no file picker yet; macOS sandbox and a
+  picker package are left for the app work) with a bitrate dropdown, progress bar and cancel button.
+- `example/integration_test/convert_test.dart` runs in the real macOS app
+  (`cd example && flutter test integration_test -d macos`): conversion with progress, bitrates
+  128 and 320 (output size within 15% of the expectation), cancellation of a 10 minute file,
+  a pre-cancelled token, missing and garbage input, and four parallel conversions. All pass.
+  These need the prebuilt frameworks, so CI does not run them yet.
+- `ffi` moved from dev dependency to dependency (BSD-3-Clause, Dart team); the unused template
+  dependency `plugin_platform_interface` was removed.
+
+## M3 review follow-ups
+
+- `NativeAudioConverter.convert` now closes the `NativeCallable` on every failure path, completes the
+  Future with the error when `onProgress` or the error-message read throws, reports `1.0` on
+  completion, and decodes native messages with malformed UTF-8 tolerated.
+- Decoders `mp3float` and `pcm_u8` are outside the plan's 5.3 table: `mp3float` is the decoder FFmpeg
+  actually uses for MP3, `pcm_u8` reads 8-bit WAV. Reason recorded in `build/ffmpeg/build_macos.sh`.
+- Not done (later milestones): single source for the bitrate table (Dart vs C), unit tests for the
+  native error mapping, typed exception assertions in the missing/garbage input integration tests.
+
 ## Open questions
 
 None blocking. The final native library name is decided at M2 (see above).

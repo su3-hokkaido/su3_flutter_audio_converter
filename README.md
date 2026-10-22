@@ -15,6 +15,23 @@ audio-only build of FFmpeg and calls it through a thin C wrapper and `dart:ffi`.
 
 See [docs/project_plan.md](./docs/project_plan.md) for the specification.
 
+## Usage (work in progress)
+
+```dart
+final converter = AudioConverter();
+final token = CancelToken();
+
+final written = await converter.convert(
+  inputPath: '/path/to/recording.wav',
+  outputPath: '/path/to/recording.mp3',
+  options: const ConvertOptions(outputFormat: AudioFormat.mp3, bitrateKbps: 192),
+  onProgress: (progress) => print('${(progress * 100).round()}%'),
+  cancelToken: token, // token.cancel() stops it and removes the partial file
+);
+```
+
+Only conversion to MP3 on macOS works so far.
+
 ## Licenses
 
 This package is released under the [MIT License](./LICENSE). The bundled FFmpeg and LAME libraries
