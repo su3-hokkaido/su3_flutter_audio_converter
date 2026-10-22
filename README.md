@@ -3,19 +3,25 @@
 A Flutter FFI plugin that converts audio files entirely on the device. It bundles a minimal,
 audio-only build of FFmpeg and calls it through a thin C wrapper and `dart:ffi`.
 
-> Status: under development. The public API is not available yet; nothing is published on pub.dev.
-
-## Features (planned)
+## Features
 
 - Input and output formats: mp3, m4a, wma, wav, aac (all 5 x 5 pairs, including same-format).
 - Bitrate: 128 / 192 / 256 / 320 kbps (default 128), narrowed per output format.
 - Progress reporting and cancellation, with no temporary or partial files left behind.
 - Fully offline: no network access, no analytics, no data collected.
-- Platforms: iOS, Android, macOS, Windows.
+- Platforms: iOS, Android, macOS and Windows (Windows is experimental: the build is checked in CI,
+  but it has not been run on a Windows machine yet).
 
-See [docs/project_plan.md](./docs/project_plan.md) for the specification.
+## Installation
 
-## Usage (work in progress)
+```
+flutter pub add su3_flutter_audio_converter
+```
+
+The prebuilt FFmpeg and LAME libraries are bundled in the package, so no toolchain and no network
+access are needed when you build your app. Minimum versions: iOS 15.0, macOS 10.15, Android API 24.
+
+## Usage
 
 ```dart
 final converter = AudioConverter();
@@ -47,13 +53,22 @@ Notes:
 - Lossy outputs are at most stereo; input with more channels is mixed down. When an encoder does not
   support the input sample rate, the nearest supported rate is used. 8-bit WAV input gives 16-bit
   WAV output.
-- Only macOS works so far.
 
 ## Licenses
 
 This package is released under the [MIT License](./LICENSE). The bundled FFmpeg and LAME libraries
-are built in an LGPL-only configuration and linked dynamically; their versions, licenses and source
-locations will be listed in `licenses/` and in this README before the first release.
+are built in an LGPL-only configuration and linked dynamically (separate shared libraries, so you
+can replace them with your own build):
+
+| Component | Version | License | Source |
+|---|---|---|---|
+| [FFmpeg](https://ffmpeg.org/) (libavformat, libavcodec, libswresample, libavutil) | 8.1.3 | LGPL 2.1 or later | https://ffmpeg.org/releases/ffmpeg-8.1.3.tar.xz |
+| [LAME](https://lame.sourceforge.io/) (libmp3lame) | 3.100 | LGPL 2 | https://downloads.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz |
+
+The license texts and rebuilding notes are in [`licenses/`](./licenses). The build scripts are in
+`build/ffmpeg/`, and the GitHub Release named by `PREBUILT_TAG` in `build/versions.env` attaches the
+exact sources and checksums. An app that uses this package should show these notices, for example
+through Flutter's `LicenseRegistry`.
 
 ## Support
 
