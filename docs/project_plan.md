@@ -41,8 +41,8 @@
 | Bundle ID (iOS / macOS) | `su3hokkaido.audioconverter.com` |
 | Application ID (Android) | `su3hokkaido.audioconverter.com` |
 
-- Store listing names are limited to 30 characters on both the App Store and Google Play, so short forms for the listing name and the home-screen name (`CFBundleDisplayName` / `android:label`) still need to be decided (§8.2).
-- The Bundle ID / Application ID **cannot be changed after the app is published**. Confirm them before the first build (§8.2).
+- Store listing names are limited to 30 characters on both the App Store and Google Play, so the store listing name and the home-screen name (`CFBundleDisplayName` / `android:label`) are `Audio Converter by Su3` (22 characters, decision #14).
+- The Bundle ID / Application ID **cannot be changed after the app is published**. They are confirmed in decision #15.
 
 ---
 
@@ -69,7 +69,7 @@
 |---|---|---|---|---|---|
 | mp3 | ○ | ○ | ○ | ○ | |
 | m4a / aac (AAC-LC) | ○ | ○ | ○ | ○ | FFmpeg's built-in `aac` encoder |
-| wma (WMAv2) | ○ | ○ | ○ | To verify | The encoder may reject 320 kbps depending on the sample rate. Decide after testing on real devices |
+| wma (WMAv2) | ○ | ○ | ○ | − | 320 kbps is not offered for WMA (decision #16) |
 | wav (PCM) | − | − | − | − | Uncompressed, so there is no bitrate option (hidden in the UI) |
 
 - The allowed values are defined in the package (`supportedBitrates(format)`). The app builds its UI from the return value.
@@ -213,7 +213,7 @@ build/ffmpeg/build_windows.ps1
 
 - A minimal audio-only build is expected to be a few MB per architecture. Even the total across all OSes and ABIs should stay within pub.dev's upload limit, but **measure it after the first build and consider switching to Option B if it exceeds the limit**.
 - Store distribution strips unneeded ABIs (ABI splits in Android App Bundles, app thinning on the App Store), so the impact on end users' download size is small.
-- The C wrapper (`libsu3_audio_core`) is small, so it may be compiled from source in each OS's plugin build (CMake / podspec) instead of being bundled with FFmpeg. Decide this in Step 1.
+- The C wrapper (`libsu3_audio_core`) is small, so it is compiled from source in each OS's plugin build (CMake / podspec) instead of being bundled as a binary (decision #17). Only FFmpeg and LAME are prebuilt binaries.
 
 ---
 
@@ -317,14 +317,16 @@ abstract class AudioConverter {
 | 11 | Repository names | Package `su3_flutter_audio_converter` / app `audio-converter-crossplatform-app` |
 | 12 | App display name | Audio Converter for Crossplatform |
 | 13 | Bundle ID / Application ID | `su3hokkaido.audioconverter.com` |
+| 14 | Store listing name and home-screen name | `Audio Converter by Su3` (the display name in #12 stays the long form) |
+| 15 | Bundle ID / Application ID | Confirmed as `su3hokkaido.audioconverter.com` (cannot change after publishing) |
+| 16 | WMA 320 kbps | Not provided. WMA offers 128 / 192 / 256 |
+| 17 | C wrapper distribution | Compile `libsu3_audio_core` from source in each plugin build (CMake for Android/Windows, podspec for iOS/macOS). Reasons: it is small, avoids per-ABI wrapper binaries, matches the `plugin_ffi` template, and keeps debugging and AddressSanitizer simple. Only FFmpeg and LAME are prebuilt |
+| 18 | Package license | MIT |
+| 19 | Branch strategy and release tooling | `main` / `develop` with `feature/...` branches. changesets does not support Dart, so release-please (`dart` release type, Conventional Commits) is the planned tool; set up at the publish milestone |
 
-### 8.2 Open items (ask Su during implementation)
+### 8.2 Open items
 
-1. Short forms of the store listing name and the home-screen name (to fit the 30-character limit)
-2. Final confirmation of the Bundle ID / Application ID (cannot be changed after publishing)
-3. Whether to offer 320 kbps for WMA (after testing on real devices)
-4. Whether to bundle the C wrapper as a binary or compile it from source in the plugin build
-5. The package license (MIT / BSD-3 / LGPL, etc.)
+None. All items were decided; see §8.1 #14 to #19.
 
 ---
 

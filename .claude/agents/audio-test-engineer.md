@@ -13,8 +13,8 @@ Scope (from `docs/project_plan.md` §3 and §7 Step 1):
   conversion. Read each output back with `probe` and check format, duration (with tolerance),
   bitrate and sample rate.
 - **Bitrates**: 128 / 192 / 256 / 320 kbps, default 128; wav has none; unsupported values raise
-  `UnsupportedBitrateException`. WMA 320 kbps is an open item (§8.2 #3): record observed behaviour,
-  do not decide.
+  `UnsupportedBitrateException`. WMA 320 kbps is not offered (§8.1 #16); test that it raises
+  `UnsupportedBitrateException`.
 - **WAV output**: keeps the input's sample rate and channel count; 16-bit PCM for compressed input,
   input bit depth for PCM input.
 - **Cancellation**: after cancel, the Future completes with `ConversionCancelledException` and no
