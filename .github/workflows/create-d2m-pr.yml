@@ -1,7 +1,7 @@
-# develop -> main release pull request (docs/project_plan.md section 8). On every push to develop,
-# git-pr-release opens or updates the pull request and lists the merged pull requests in its body
-# (.git-pr-release, .github/git-pr-release.erb). Pull requests opened with GITHUB_TOKEN do not
-# trigger CI, so the optional RELEASE_TOKEN secret is used when it is set, as in release.yml.
+# develop -> main release pull request. On every push to develop, git-pr-release opens or updates
+# the pull request and lists the merged pull requests in its body (.git-pr-release,
+# .github/git-pr-release.erb). Pull requests opened with GITHUB_TOKEN do not trigger CI, so the
+# optional RELEASE_TOKEN secret is used when it is set.
 name: Create d2m PR
 
 on:

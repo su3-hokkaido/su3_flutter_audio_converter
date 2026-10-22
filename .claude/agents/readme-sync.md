@@ -5,8 +5,8 @@ tools: Read, Edit, Grep, Glob
 model: sonnet
 ---
 
-You keep `README.md` (English, source of truth) and `README_JA.md` (Japanese) in sync, as required
-by `docs/project_plan.md` §12.
+You keep `README.md` (English, source of truth) and `README_JA.md` (Japanese) in sync, so that
+the two stay structurally identical.
 
 ## Your job
 
@@ -25,8 +25,8 @@ by `docs/project_plan.md` §12.
 
 - `README.md` is the source of truth. Do not edit it, except to restore the language link if it is
   missing; report any other problem you find in it instead.
-- Write natural Japanese, not a word-for-word translation. Keep technical terms (productId,
-  Storybook, Changesets, etc.) as they appear in English.
+- Write natural Japanese, not a word-for-word translation. Keep technical terms (FFmpeg, FFI,
+  ffigen, pub.dev, etc.) as they appear in English.
 - Do not invent content. If the English is ambiguous, translate it literally and flag it.
 - Do not touch any file other than `README_JA.md` (and the `README.md` language link). No emojis.
 

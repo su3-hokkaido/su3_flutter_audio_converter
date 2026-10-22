@@ -1,13 +1,14 @@
-# Keeps the SHA-pinned actions current (docs/project_plan.md section 8). Pull requests target
-# develop, like every other change. npm and Docker updates are left out on purpose: dependencies
-# are pinned exactly and bumped with `make install PKG=...`, and the Playwright image tag must move
-# together with @playwright/test and the VRT baselines (src/conventions.test.ts).
+# Keeps the SHA-pinned actions and the pub dependencies current. Pull requests target develop, like
+# every other change.
+#
+# The pub entries fail with "directory not found" in the Dependabot tab until the package and the
+# example app are scaffolded (docs/project_plan.md section 7, Step 1). Every new dependency still
+# needs a license check (CLAUDE.md, "Hard constraints"), so review these pull requests with the
+# license-auditor agent.
 version: 2
 updates:
   - package-ecosystem: github-actions
-    directories:
-      - /
-      - /.github/actions/setup
+    directory: /
     target-branch: develop
     schedule:
       interval: weekly
@@ -19,3 +20,29 @@ updates:
     groups:
       github-actions:
         patterns: ['*']
+
+  - package-ecosystem: pub
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: deps
+    groups:
+      pub-minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: pub
+    directory: /example
+    target-branch: develop
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    commit-message:
+      prefix: deps
+    groups:
+      pub-example-minor-and-patch:
+        update-types: [minor, patch]
