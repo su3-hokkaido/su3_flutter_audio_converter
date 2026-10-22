@@ -67,14 +67,14 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
-  # Self-made test fixtures shared with the package (see ../test/fixtures/README.md); they are only
+  # Self-made test fixtures (see assets/fixtures/README.md); they are only
   # used by integration_test/.
   assets:
-    - ../test/fixtures/tone.mp3
-    - ../test/fixtures/tone.m4a
-    - ../test/fixtures/tone.wma
-    - ../test/fixtures/tone.wav
-    - ../test/fixtures/tone.aac
+    - assets/fixtures/tone.mp3
+    - assets/fixtures/tone.m4a
+    - assets/fixtures/tone.wma
+    - assets/fixtures/tone.wav
+    - assets/fixtures/tone.aac
 
   # To add assets to your application, add an assets section, like this:
   # assets:

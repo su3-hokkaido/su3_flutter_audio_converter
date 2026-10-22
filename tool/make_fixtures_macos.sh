@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Regenerates test/fixtures/tone.{wav,mp3,wma,m4a,aac} (see test/fixtures/README.md).
+# Regenerates example/assets/fixtures/tone.{wav,mp3,wma,m4a,aac} (see example/assets/fixtures/README.md).
 #
 # WAV, MP3 and WMA come from tool/make_fixtures.c, which links the package's native core against
 # the prebuilt macOS FFmpeg libraries. M4A and AAC (ADTS) are made from the WAV with the macOS
@@ -11,7 +11,7 @@ set -euo pipefail
 root="$(cd "$(dirname "$0")/.." && pwd)"
 lib="$root/build/work/out/macos/lib"
 include="$root/prebuilt/include"
-out="$root/test/fixtures"
+out="$root/example/assets/fixtures"
 work="$root/build/work/fixtures"
 
 [ -d "$lib" ] || { echo "error: run build/ffmpeg/build_macos.sh first" >&2; exit 1; }
