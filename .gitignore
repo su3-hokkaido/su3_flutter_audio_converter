@@ -3,7 +3,10 @@
 # Files and directories created by pub
 .dart_tool/
 .packages
-build/
+# build/ holds the committed FFmpeg build scripts (project_plan.md §6.2); ignore only Flutter output
+build/*
+!build/ffmpeg/
+!build/versions.env
 # If you're building an application, you may want to check-in your pubspec.lock
 pubspec.lock
 
@@ -28,3 +31,13 @@ doc/api/
 .flutter-plugins
 .flutter-plugins-dependencies
 .DS_Store
+
+# Claude Code personal settings
+.claude/settings.local.json
+
+# Prebuilt FFmpeg/LAME artifacts (fetched from GitHub Releases, never committed)
+*.xcframework/
+**/jniLibs/
+*.dll
+*.so
+*.dylib
