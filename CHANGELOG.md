@@ -2,14 +2,11 @@
 
 ## [0.1.0](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.0.1...v0.1.0) (2026-10-22)
 
+First release.
 
 ### Features
 
-* add AudioFormat, smoke test and macOS FFmpeg build scripts ([b313ad1](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/b313ad17937216a92764c820abf0b89e7c7e2d70))
-* add the wav to mp3 conversion core and macOS framework packaging ([48f8684](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/48f86848affeb05fb233f0aa7c16d0f73793607e))
-* add the wav to mp3 conversion core and macOS framework packaging ([262444b](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/262444b97c80014f8e046ae20e534d05c6098bdb))
-* scaffold the plugin_ffi package for iOS, Android, macOS and Windows ([8c2939b](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/8c2939bb7bb41463fe4bdac9404a103e30665e76))
-* support all 5x5 conversions with probe, mp3 bitrate narrowing and unique output names ([e6e428b](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/e6e428b2fcd9e540a7cb683e30c5f41f1d48c6ee))
-* support all 5x5 conversions with probe, mp3 bitrate narrowing and unique output names ([bdbe608](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/bdbe6084707e537518e300dd971ebb926c27ff01))
-
-## Changelog
+* Convert between all 5 x 5 formats (mp3, m4a, wma, wav, aac) fully on the device with a bundled, minimal, LGPL-only FFmpeg and LAME, through `dart:ffi`.
+* Progress reporting and cancellation; partial output is removed on failure or cancel.
+* `AudioConverter.probe` / `AudioInfo`, `supportedBitrates(format, {input})` (MP3 is narrowed to 128 kbps for input below 32 kHz), and `resolveUniqueOutputPath` (`name (1).mp3`).
+* Platforms: iOS 15.0+, Android API 24+ (arm64-v8a, armeabi-v7a, x86_64), macOS 10.15+ and Windows x64 (experimental: not yet run on a Windows machine).
