@@ -123,13 +123,16 @@ build_lame() {
     )
     local here_w
     here_w="$(cygpath -m "$PWD")"
-    # Dash-style options keep MSYS2 from rewriting them as POSIX paths. /MD matches Flutter.
-    cl -nologo -O2 -MD -DNDEBUG -DWIN32 -D_CRT_SECURE_NO_WARNINGS -DHAVE_CONFIG_H -DHAVE_MPGLIB \
-      -DSTDC_HEADERS -Dlame_EXPORTS \
+    # MSYS2 rewrites path-like arguments of native programs, including the part after -Fo or -OUT:
+    # (D:/a/x became A:\x in CI). MSYS2_ARG_CONV_EXCL='*' turns that off for these two calls; the
+    # arguments are already Windows paths (cygpath -m). /MD matches Flutter. STDC_HEADERS comes from
+    # the config.h copy of configMS.h.
+    MSYS2_ARG_CONV_EXCL='*' cl -nologo -O2 -MD -DNDEBUG -DWIN32 -D_CRT_SECURE_NO_WARNINGS \
+      -DHAVE_CONFIG_H -DHAVE_MPGLIB -Dlame_EXPORTS \
       -I"$here_w/gen" -I"$here_w" -I"$here_w/include" -I"$here_w/libmp3lame" -I"$here_w/mpglib" \
       -Fo"$here_w/obj/" -c "${sources[@]}"
-    link -nologo -DLL -OUT:"$here_w/libmp3lame.dll" -IMPLIB:"$here_w/mp3lame.lib" \
-      -DEF:"$here_w/include/lame.def" obj/*.obj
+    MSYS2_ARG_CONV_EXCL='*' link -nologo -DLL -OUT:"$here_w/libmp3lame.dll" \
+      -IMPLIB:"$here_w/mp3lame.lib" -DEF:"$here_w/include/lame.def" obj/*.obj
     cp libmp3lame.dll "$prefix/bin/"
     cp mp3lame.lib "$prefix/lib/"
     cp include/lame.h "$prefix/include/lame/"
@@ -147,6 +150,10 @@ if ! command -v nasm >/dev/null; then
 fi
 (
   cd "$bld/ffmpeg"
+  # Same MSYS2 path rewriting as for LAME: keep -I and -LIBPATH: arguments (Windows paths from
+  # cygpath -m) untouched when configure and make call cl and link. Other arguments (for example
+  # the -Fo/tmp/... of configure's tests) still need the conversion.
+  export MSYS2_ARG_CONV_EXCL='-I;-LIBPATH:'
   # Decoders beyond the section 5.3 table: mp3float is the decoder FFmpeg actually uses for MP3
   # (mp3 is the fixed-point variant); pcm_u8 reads 8-bit WAV input (within the pcm_* range).
   ./configure \
