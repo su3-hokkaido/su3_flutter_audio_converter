@@ -195,9 +195,17 @@ fi
 #           populate)
 mkdir -p "$out/bin" "$out/lib" "$out/include"
 cp "$prefix"/bin/*.dll "$out/bin/"
+# FFmpeg's MSVC install puts the import libraries next to the DLLs in bin/ (LAME's is in lib/), so
+# both directories are searched. The listing helps when a name differs.
+echo "Import libraries in the install prefix:"
+find "$prefix" -name '*.lib' | sort
 for name in avutil swresample avcodec avformat mp3lame; do
-  [ -f "$prefix/lib/$name.lib" ] || { echo "error: missing import library $name.lib" >&2; exit 1; }
-  cp "$prefix/lib/$name.lib" "$out/lib/"
+  found=""
+  for dir in "$prefix/lib" "$prefix/bin"; do
+    if [ -f "$dir/$name.lib" ]; then found="$dir/$name.lib"; break; fi
+  done
+  [ -n "$found" ] || { echo "error: missing import library $name.lib" >&2; exit 1; }
+  cp "$found" "$out/lib/"
 done
 cp -R "$prefix/include/." "$out/include/"
 
