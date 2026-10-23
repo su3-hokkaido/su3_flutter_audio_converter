@@ -29,8 +29,8 @@ Files:
   `build_windows.sh` therefore compiles the unmodified LAME 3.100 sources directly with `cl.exe`
   (source list copied from `libmp3lame/Makefile.am` and `mpglib/Makefile.am`), exports through the
   shipped `include/lame.def`, and produces `libmp3lame.dll` and `mp3lame.lib`.
-- LAME is built without SSE/NASM code (`HAVE_XMMINTRIN_H` undefined). Output is the same, encoding
-  is somewhat slower. Revisit only if measured as a problem.
+- LAME is built with its SSE quantizer: `configMS.h` defines `HAVE_XMMINTRIN_H` on x64, so
+  `libmp3lame/vector/xmm_quantize_sub.c` is compiled in (intrinsics only, no NASM).
 
 ### Assembly
 
@@ -118,3 +118,10 @@ Expected to need attention:
   `MSYS2_ARG_CONV_EXCL='*'` on the `cl` and `link` calls of `build_lame`, and `-DSTDC_HEADERS` was
   dropped (warning C4005: `configMS.h` already defines it).
 - Pre-emptive, untested: `MSYS2_ARG_CONV_EXCL='-I;-LIBPATH:'` around FFmpeg's configure and make.
+
+## Second CI run
+
+- The `MSYS2_ARG_CONV_EXCL` fix worked: all LAME sources compiled.
+- `link` failed with LNK2019 `init_xrpow_core_sse` (referenced by `quantize.c`), because the earlier
+  assumption "SSE code is not built" was wrong (see the LAME decision above). Fixed by adding
+  `libmp3lame/vector/xmm_quantize_sub.c` to the sources.
