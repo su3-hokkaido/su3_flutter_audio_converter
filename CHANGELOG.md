@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.1...v0.1.2) (2026-10-23)
+
+
+### Bug Fixes
+
+* Add  to  in configure ([9eaaf16](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/9eaaf168190e749bae0d426f80b48dcd187a7309))
+* Add  to  in configure ([d0fce51](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/d0fce51adb159f609ffd8e48ae9aa55a9dde142d))
+
 ## [0.1.1](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.0...v0.1.1) (2026-10-23)
 
 
