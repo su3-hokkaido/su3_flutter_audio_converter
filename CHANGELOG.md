@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.3...v0.1.4) (2026-10-23)
+
+
+### Bug Fixes
+
+* pod lib lint ([853d42b](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/853d42be6d6457f42e1525a9f1c98192c4fad1e3))
+* pod lib lint ([ba9e1b1](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/ba9e1b148175ad532a0cd9fdeda2c5b9daad439d))
+
 ## [0.1.3](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.2...v0.1.3) (2026-10-23)
 
 
