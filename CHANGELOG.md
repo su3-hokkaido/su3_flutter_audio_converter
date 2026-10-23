@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.2...v0.1.3) (2026-10-23)
+
+
+### Bug Fixes
+
+* Find .lib from both of lib/ and bin/ ([ea01195](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/ea01195f34135d295f32a5e51291eeedc414d9d0))
+* Find .lib from both of lib/ and bin/ ([211f180](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/211f180508468d5f0688b9e9e9f8368b54c8bec3))
+
 ## [0.1.2](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.1...v0.1.2) (2026-10-23)
 
 
