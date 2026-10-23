@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.0...v0.1.1) (2026-10-23)
+
+
+### Bug Fixes
+
+* link error of LAME ([64d0a2d](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/64d0a2d47960aa46877fab323f7f35a8009dbe62))
+* link error of LAME ([789c6dc](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/789c6dcfd5de78e585489d85ac518f3288749f76))
+
 ## [0.1.0](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.0.1...v0.1.0) (2026-10-22)
 
 First release.

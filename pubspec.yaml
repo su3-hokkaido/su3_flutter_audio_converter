@@ -1,6 +1,6 @@
 name: su3_flutter_audio_converter
 description: "Converts audio files (mp3, m4a, wma, wav, aac) fully on the device with a bundled minimal FFmpeg, via dart:ffi."
-version: 0.1.0
+version: 0.1.1
 repository: https://github.com/su3-hokkaido/su3_flutter_audio_converter
 issue_tracker: https://github.com/su3-hokkaido/su3_flutter_audio_converter/issues
 funding:
