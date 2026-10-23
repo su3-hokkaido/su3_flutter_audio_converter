@@ -93,3 +93,57 @@ build/ffmpeg/build_macos.sh           # build universal dylibs into build/work/o
 build/ffmpeg/package_macos.sh         # create macos/Frameworks/*.xcframework and prebuilt/include
 tool/run_native_tests_macos.sh        # native tests (add --leaks for the leak check)
 ```
+
+### Releasing
+
+Two independent things are released: the prebuilt native libraries (GitHub Release `prebuilt-vN`)
+and the package itself (`vX.Y.Z`, pub.dev). The repository needs the setting "Allow GitHub Actions
+to create and approve pull requests" (or a `RELEASE_TOKEN` secret), and `main` as its default branch.
+
+**1. Prebuilt libraries** (only when FFmpeg, LAME, the build scripts or a deployment target change)
+
+1. Change the code, bump `PREBUILT_TAG` in `build/versions.env` (for example `prebuilt-v2`) and merge
+   it through `develop`.
+2. Run the **Prebuilt** workflow by hand (Actions > Prebuilt > Run workflow). It builds macOS, iOS,
+   Android and Windows and keeps the archives as workflow artifacts. Fix failures here; the Windows
+   job uploads `build-windows-log`.
+3. When all four jobs pass, tag the commit on `main` and push the tag. The workflow runs again and
+   creates the Release (the four archives, the FFmpeg and LAME sources, the build scripts,
+   `BUILD-INFO.txt`, `SHA256SUMS`). A tag is used once; if the Release job fails, delete the tag and
+   the partial Release, or move to the next number.
+
+   ```
+   git switch main && git pull
+   git tag prebuilt-v2 && git push origin prebuilt-v2
+   ```
+
+**2. Package version** (release-please)
+
+1. Use Conventional Commits. `feat:` and `fix:` change the package and open a release pull request;
+   `build:`, `ci:`, `chore:` and `docs:` do not (use them for build scripts, workflows and
+   documentation). Messages must describe the change, not name a branch.
+2. Merge `develop` into `main`. The **Release Please** workflow opens `chore(main): release X.Y.Z`
+   (it bumps `pubspec.yaml` and `CHANGELOG.md`). Edit the changelog entry in that pull request if
+   needed, then merge it: the tag `vX.Y.Z` and a GitHub Release are created.
+3. Merge `main` back into `develop`.
+
+**3. Publishing to pub.dev** (by hand)
+
+On the `vX.Y.Z` commit of `main`:
+
+```
+tool/fetch_prebuilt.sh                # all four platforms, from PREBUILT_TAG
+flutter analyze && flutter test
+flutter pub publish --dry-run         # expect 0 warnings and about 14 MB
+flutter pub publish
+```
+
+`.pubignore` replaces `.gitignore` for publishing, so the git-ignored prebuilt libraries are
+included. Checks that were done for 0.1.x:
+
+- `pana` scores 160/160. Run it on a copy of the package without the example app's generated
+  directories (`.symlinks`, `ephemeral`, `Pods`, `build`): on the working tree it follows
+  `example/ios/.symlinks` back into the package and fills the disk.
+- `pod lib lint` currently fails with Xcode 27 because the Flutter SDK's own `Flutter` pod targets an
+  old iOS version; building the example app (`flutter build ios`, `flutter build macos`) is the
+  check that matters.

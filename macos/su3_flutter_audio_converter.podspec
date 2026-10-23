@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
 Converts mp3, m4a, wma, wav and aac files entirely on the device through dart:ffi.
                        DESC
   s.homepage         = 'https://github.com/su3-hokkaido/su3_flutter_audio_converter'
-  s.license          = { :file => '../LICENSE' }
+  s.license          = { :type => 'MIT', :file => '../LICENSE' }
   s.author           = { 'Su3' => 'su3.hokkaido.2210@gmail.com' }
 
   # This will ensure the source files in Classes/ are included in the native
