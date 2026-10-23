@@ -99,9 +99,10 @@ mkdir -p "$prefix/bin" "$prefix/lib" "$prefix/include/lame" "$bld/lame" "$bld/ff
 prefix_w="$(cygpath -m "$prefix")"
 
 # --- LAME: library only, shared, compiled directly with cl.exe ----------------------------------
-# Sources follow libmp3lame/Makefile.am and mpglib/Makefile.am of LAME 3.100. HAVE_XMMINTRIN_H is
-# left undefined, so the optional SSE quantizer (vector/xmm_quantize_sub.c) is not used. HAVE_MPGLIB
-# is needed because include/lame.def exports the hip_* / lame_decode* functions. The export list is
+# Sources follow libmp3lame/Makefile.am and mpglib/Makefile.am of LAME 3.100. configMS.h defines
+# HAVE_XMMINTRIN_H on x64, so quantize.c calls init_xrpow_core_sse and
+# libmp3lame/vector/xmm_quantize_sub.c (SSE intrinsics, no NASM) is linked in. HAVE_MPGLIB is needed
+# because include/lame.def exports the hip_* / lame_decode* functions. The export list is
 # include/lame.def (it does not contain the lame_init_old symbol that breaks other linkers).
 # Output: libmp3lame.dll plus the import library mp3lame.lib (FFmpeg's MSVC toolchain turns
 # -lmp3lame into mp3lame.lib).
@@ -118,6 +119,7 @@ build_lame() {
       libmp3lame/psymodel.c libmp3lame/quantize.c libmp3lame/quantize_pvt.c
       libmp3lame/reservoir.c libmp3lame/set_get.c libmp3lame/tables.c libmp3lame/takehiro.c
       libmp3lame/util.c libmp3lame/vbrquantize.c libmp3lame/version.c
+      libmp3lame/vector/xmm_quantize_sub.c
       mpglib/common.c mpglib/dct64_i386.c mpglib/decode_i386.c mpglib/interface.c
       mpglib/layer1.c mpglib/layer2.c mpglib/layer3.c mpglib/tabinit.c
     )
@@ -129,7 +131,8 @@ build_lame() {
     # the config.h copy of configMS.h.
     MSYS2_ARG_CONV_EXCL='*' cl -nologo -O2 -MD -DNDEBUG -DWIN32 -D_CRT_SECURE_NO_WARNINGS \
       -DHAVE_CONFIG_H -DHAVE_MPGLIB -Dlame_EXPORTS \
-      -I"$here_w/gen" -I"$here_w" -I"$here_w/include" -I"$here_w/libmp3lame" -I"$here_w/mpglib" \
+      -I"$here_w/gen" -I"$here_w" -I"$here_w/include" -I"$here_w/libmp3lame" -I"$here_w/libmp3lame/vector" \
+      -I"$here_w/mpglib" \
       -Fo"$here_w/obj/" -c "${sources[@]}"
     MSYS2_ARG_CONV_EXCL='*' link -nologo -DLL -OUT:"$here_w/libmp3lame.dll" \
       -IMPLIB:"$here_w/mp3lame.lib" -DEF:"$here_w/include/lame.def" obj/*.obj
