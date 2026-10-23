@@ -135,3 +135,10 @@ Expected to need attention:
   with `-DCBS_APV=1 -DCBS_AV1=1` in `--extra-cflags` (the types are always defined by libavformat's
   `cbs_apv.c` / `cbs_av1.c`; no codec is enabled and no source is changed). More MSVC-specific
   compile errors may follow.
+
+## Fourth CI run
+
+- `make` and `make install` of FFmpeg finished (the cbs fix worked).
+- The collection step stopped with "missing import library avutil.lib": FFmpeg's MSVC install does
+  not put the `.lib` files in `lib/` (assumed `bin/`, unconfirmed). The script now searches `lib/`
+  and `bin/` and prints every `.lib` of the prefix.
