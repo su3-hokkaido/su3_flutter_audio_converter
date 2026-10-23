@@ -125,3 +125,13 @@ Expected to need attention:
 - `link` failed with LNK2019 `init_xrpow_core_sse` (referenced by `quantize.c`), because the earlier
   assumption "SSE code is not built" was wrong (see the LAME decision above). Fixed by adding
   `libmp3lame/vector/xmm_quantize_sub.c` to the sources.
+
+## Third CI run
+
+- LAME built and linked; FFmpeg `configure` found it (`libmp3lame` enabled, `License: LGPL version 2.1
+  or later`) and `make` started.
+- `libavformat/cbs.c` failed with MSVC error C7757 (empty initializer for the array of bitstream
+  types), because the mov muxer compiles it while `CONFIG_CBS_APV` / `CONFIG_CBS_AV1` are 0. Fixed
+  with `-DCBS_APV=1 -DCBS_AV1=1` in `--extra-cflags` (the types are always defined by libavformat's
+  `cbs_apv.c` / `cbs_av1.c`; no codec is enabled and no source is changed). More MSVC-specific
+  compile errors may follow.

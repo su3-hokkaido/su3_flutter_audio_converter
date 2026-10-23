@@ -157,13 +157,19 @@ fi
   # cygpath -m) untouched when configure and make call cl and link. Other arguments (for example
   # the -Fo/tmp/... of configure's tests) still need the conversion.
   export MSYS2_ARG_CONV_EXCL='-I;-LIBPATH:'
+  # The mov/ipod muxer (m4a) builds libavformat/cbs.c, whose table of bitstream types is empty
+  # when CONFIG_CBS_APV and CONFIG_CBS_AV1 are 0 (no APV/AV1 decoder, parser or bsf is enabled).
+  # GCC and clang accept the empty initializer; MSVC rejects it (error C7757). libavformat's
+  # cbs_apv.c and cbs_av1.c always define the two types, so defining CBS_APV and CBS_AV1 only fills
+  # the table (no codec is added). No FFmpeg source file is changed.
+  cbs_flags="-DCBS_APV=1 -DCBS_AV1=1"
   # Decoders beyond the section 5.3 table: mp3float is the decoder FFmpeg actually uses for MP3
   # (mp3 is the fixed-point variant); pcm_u8 reads 8-bit WAV input (within the pcm_* range).
   ./configure \
     --toolchain=msvc \
     --target-os=win64 --arch=x86_64 \
     --prefix="$prefix" \
-    --extra-cflags="-I$prefix_w/include" \
+    --extra-cflags="-I$prefix_w/include $cbs_flags" \
     --extra-ldflags="-LIBPATH:$prefix_w/lib" \
     ${asm_args[@]+"${asm_args[@]}"} \
     --disable-everything \
