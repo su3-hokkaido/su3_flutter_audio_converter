@@ -109,3 +109,12 @@ Expected to need attention:
 - Where Windows prebuilt artifacts live inside the pub package (`prebuilt/windows/`) and how
   `tool/fetch_prebuilt.sh` names the Release asset are not decided; this task assumes
   `prebuilt/windows/{bin,lib,include}`.
+
+## First CI run (prebuilt workflow, 2026-10-22)
+
+- MSVC environment, `link.exe` selection, source download and checksum verification worked.
+- LAME failed: MSYS2 rewrote `-Fo"D:/a/..."` (`D:/a/x` became `A:\x`), so `cl` could not write
+  `version.obj`. The comment in the script that dash-style options are safe was wrong. Fixed with
+  `MSYS2_ARG_CONV_EXCL='*'` on the `cl` and `link` calls of `build_lame`, and `-DSTDC_HEADERS` was
+  dropped (warning C4005: `configMS.h` already defines it).
+- Pre-emptive, untested: `MSYS2_ARG_CONV_EXCL='-I;-LIBPATH:'` around FFmpeg's configure and make.

@@ -6,7 +6,7 @@
       "package-name": "su3_flutter_audio_converter",
       "changelog-path": "CHANGELOG.md",
       "include-component-in-tag": false,
-      "bump-minor-pre-major": true,
+      "bump-minor-pre-major": true
     }
   }
 }
