@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.4...v0.1.5) (2026-10-24)
+
+
+### Bug Fixes
+
+* align the development toolchain with Flutter 3.47.8 ([33d6efc](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/33d6efc8e0cffd98b705516984c9bc4ceca09e33))
+
 ## [0.1.4](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.3...v0.1.4) (2026-10-23)
 
 
