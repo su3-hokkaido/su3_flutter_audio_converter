@@ -26,6 +26,9 @@ doc/api/
 /.claude/
 /.github/
 /.git-pr-release
+/.fvmrc
+/Makefile
+/.fvm/
 /CLAUDE.md
 /docs/
 /release-please-config.json

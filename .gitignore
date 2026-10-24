@@ -32,6 +32,9 @@ doc/api/
 .flutter-plugins-dependencies
 .DS_Store
 
+# FVM local SDK link and cache (.fvmrc itself is committed)
+.fvm/
+
 # Claude Code personal settings
 .claude/settings.local.json
 
