@@ -40,13 +40,13 @@ jobs:
             echo "::notice::pubspec.yaml not found; Flutter checks skipped"
           fi
 
-      # Keep flutter-version in step with the local toolchain (`flutter --version`).
+      # Keep flutter-version in step with .fvmrc (the local toolchain pinned via FVM).
       - name: Set up Flutter
         if: steps.package.outputs.present == 'true'
         uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
         with:
           channel: stable
-          flutter-version: 3.35.6
+          flutter-version: 3.47.8
           cache: true
 
       - name: Install dependencies
