@@ -77,6 +77,25 @@ https://buymeacoffee.com/su3hokkaido
 
 ## Development
 
+The Flutter version is pinned in `.fvmrc` and used through [FVM](https://fvm.app/): run
+`fvm use` once to link the SDK (the `Makefile` calls `fvm flutter` when `fvm` is installed, and plain
+`flutter` otherwise).
+
+Common tasks have shortcuts in the `Makefile`; `make help` lists them all:
+
+```
+make setup                            # flutter pub get (package and example app)
+make check                            # format check, flutter analyze and flutter test (same as CI)
+make act                              # run .github/workflows/ci.yml locally in Docker with act
+make fetch-prebuilt                   # same as tool/fetch_prebuilt.sh (PLATFORMS="macos ios" to narrow)
+make prebuilt-macos                   # fetch sources, build and package the macOS libraries
+make native-test                      # native tests (make native-test-leaks for the leak check)
+make integration-test DEVICE=macos   # integration tests on a device
+make publish-dry-run                  # flutter pub publish --dry-run
+```
+
+The sections below show the underlying commands.
+
 Prebuilt FFmpeg and LAME libraries are not committed. Fetch the ones published as a GitHub Release
 (the tag is `PREBUILT_TAG` in `build/versions.env`; the Release also carries the sources and build
 scripts):
@@ -137,6 +156,8 @@ flutter analyze && flutter test
 flutter pub publish --dry-run         # expect 0 warnings and about 14 MB
 flutter pub publish
 ```
+
+The first three steps are also `make fetch-prebuilt`, `make check` and `make publish-dry-run`.
 
 `.pubignore` replaces `.gitignore` for publishing, so the git-ignored prebuilt libraries are
 included. Checks that were done for 0.1.x:
