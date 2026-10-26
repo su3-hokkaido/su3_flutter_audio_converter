@@ -6,7 +6,6 @@
 ### Bug Fixes
 
 * **macos:** restore framework symlinks flattened by pub.dev archives ([dccf43d](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/dccf43df7e7ad4089b03807619081b72f8a5138f))
-* **macos:** restore framework symlinks flattened by pub.dev archives ([83bfcfb](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/83bfcfba98c89273ac5cef95e70d52d22e3b392f))
 
 ## [0.1.5](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.4...v0.1.5) (2026-10-24)
 
@@ -21,7 +20,6 @@
 ### Bug Fixes
 
 * pod lib lint ([853d42b](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/853d42be6d6457f42e1525a9f1c98192c4fad1e3))
-* pod lib lint ([ba9e1b1](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/ba9e1b148175ad532a0cd9fdeda2c5b9daad439d))
 
 ## [0.1.3](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.2...v0.1.3) (2026-10-23)
 
@@ -29,7 +27,6 @@
 ### Bug Fixes
 
 * Find .lib from both of lib/ and bin/ ([ea01195](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/ea01195f34135d295f32a5e51291eeedc414d9d0))
-* Find .lib from both of lib/ and bin/ ([211f180](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/211f180508468d5f0688b9e9e9f8368b54c8bec3))
 
 ## [0.1.2](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.1...v0.1.2) (2026-10-23)
 
@@ -37,7 +34,6 @@
 ### Bug Fixes
 
 * Add  to  in configure ([9eaaf16](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/9eaaf168190e749bae0d426f80b48dcd187a7309))
-* Add  to  in configure ([d0fce51](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/d0fce51adb159f609ffd8e48ae9aa55a9dde142d))
 
 ## [0.1.1](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.0...v0.1.1) (2026-10-23)
 
@@ -45,7 +41,6 @@
 ### Bug Fixes
 
 * link error of LAME ([64d0a2d](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/64d0a2d47960aa46877fab323f7f35a8009dbe62))
-* link error of LAME ([789c6dc](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/789c6dcfd5de78e585489d85ac518f3288749f76))
 
 ## [0.1.0](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.0.1...v0.1.0) (2026-10-22)
 
