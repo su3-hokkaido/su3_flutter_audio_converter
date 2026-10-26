@@ -2,6 +2,29 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
 # Run `pod lib lint su3_flutter_audio_converter.podspec` to validate before publishing.
 #
+require 'fileutils'
+
+# pub.dev archives do not keep symlinks, so the versioned macOS frameworks arrive with real copies of
+# Versions/Current, <name> and Resources. Restore the symlinks; otherwise archiving fails with
+# "Multiple binaries share the same codesign path". Idempotent: correct symlinks are left alone.
+Dir.glob(File.join(__dir__, 'Frameworks', '*.xcframework', '*', '*.framework')).each do |fw|
+  versions = File.join(fw, 'Versions')
+  next unless File.directory?(File.join(versions, 'A'))
+  name = File.basename(fw, '.framework')
+  current = File.join(versions, 'Current')
+  unless File.symlink?(current)
+    FileUtils.rm_rf(current)
+    File.symlink('A', current)
+  end
+  [name, 'Resources'].each do |entry|
+    path = File.join(fw, entry)
+    next if File.symlink?(path)
+    next unless File.exist?(File.join(versions, 'A', entry))
+    FileUtils.rm_rf(path)
+    File.symlink("Versions/Current/#{entry}", path)
+  end
+end
+
 Pod::Spec.new do |s|
   s.name             = 'su3_flutter_audio_converter'
   s.version          = '0.0.1'
