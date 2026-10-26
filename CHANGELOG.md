@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.6](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.5...v0.1.6) (2026-10-26)
+
+
+### Bug Fixes
+
+* **macos:** restore framework symlinks flattened by pub.dev archives ([dccf43d](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/dccf43df7e7ad4089b03807619081b72f8a5138f))
+* **macos:** restore framework symlinks flattened by pub.dev archives ([83bfcfb](https://github.com/su3-hokkaido/su3_flutter_audio_converter/commit/83bfcfba98c89273ac5cef95e70d52d22e3b392f))
+
 ## [0.1.5](https://github.com/su3-hokkaido/su3_flutter_audio_converter/compare/v0.1.4...v0.1.5) (2026-10-24)
 
 
