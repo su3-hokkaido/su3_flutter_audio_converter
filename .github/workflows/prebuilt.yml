@@ -50,7 +50,7 @@ jobs:
         run: tool/run_native_tests_macos.sh
 
       - name: Upload
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: prebuilt-macos
           path: build/work/release/su3-prebuilt-macos.tar.gz
@@ -75,7 +75,7 @@ jobs:
           build/ffmpeg/package_release.sh ios
 
       - name: Upload
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: prebuilt-ios
           path: build/work/release/su3-prebuilt-ios.tar.gz
@@ -106,7 +106,7 @@ jobs:
           build/ffmpeg/package_release.sh android
 
       - name: Upload
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: prebuilt-android
           path: build/work/release/su3-prebuilt-android.tar.gz
@@ -133,12 +133,12 @@ jobs:
 
       # Puts the x64 MSVC tools (cl, link, lib, dumpbin) in the environment that MSYS2 inherits.
       - name: Set up the MSVC environment
-        uses: ilammy/msvc-dev-cmd@f623b2ff849ac04052666adaace67c2365850567 # v1.12.1
+        uses: ilammy/msvc-dev-cmd@cec98b9d092141f74527d0afa6feb2af698cfe89 # v1.12.1
         with:
           arch: x64
 
       - name: Set up MSYS2
-        uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884 # v2.32.0
+        uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e # v2.33.0
         with:
           msystem: MSYS
           update: false
@@ -158,7 +158,7 @@ jobs:
       # The full log is the first thing needed when this unverified script fails.
       - name: Upload the build log
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: build-windows-log
           path: |
@@ -168,7 +168,7 @@ jobs:
           retention-days: ${{ env.ARTIFACT_RETENTION_DAYS }}
 
       - name: Upload
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: prebuilt-windows
           path: build/work/release/su3-prebuilt-windows.tar.gz
@@ -198,7 +198,7 @@ jobs:
           fi
 
       - name: Download the platform archives
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: prebuilt-*
           path: release
